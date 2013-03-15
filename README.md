@@ -1,4 +1,4 @@
-prismatoid
+prismatoid (development in progress)
 ==========
 
-Ligthweight daemon to control Lightpack
+Lightweight cross-platform daemon to control Lightpack
