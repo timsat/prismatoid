@@ -5,10 +5,10 @@
 namespace prismatoid {
     namespace types {
         struct RgbColor {
-            int r,
-            int g,
-            int b,
-            int mask
+            int r;
+            int g;
+            int b;
+            int mask;
         };
     } /* types */
 } /* prismatoid */

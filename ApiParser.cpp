@@ -17,19 +17,16 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include "color_types.hpp"
+#include "LightpackDevice.hpp"
 
 namespace prismatoid {
     namespace api {
 
+        namespace dev = prismatoid::devices;
         namespace qi = boost::spirit::qi;
         namespace ascii = boost::spirit::ascii;
         namespace phoenix = boost::phoenix;
-
-        struct Color {
-            int r;
-            int g;
-            int b;
-        };
 
         typedef std::tuple<int,int,int> color_t;
 
@@ -41,11 +38,17 @@ namespace prismatoid {
             std::cout << std::get<0>(v)<< ", "<< std::get<1>(v)<< ", "<< std::get<2>(v) << std::endl;
         }
 
-        void setColors(std::vector<color_t> v) {
+        void set_colors(std::vector<color_t> v) {
             std::cout << "SetColors action" << std::endl;
+            std::vector<types::RgbColor> colors;
             for(std::vector<color_t>::iterator it = v.begin(); it != v.end(); ++it) {
                 out_color_t(*it);
-            }
+                types::RgbColor color = { std::get<0>(*it), std::get<1>(*it), std::get<2>(*it), 0x0fff};
+                colors.push_back(color);
+            }           
+            dev::LightpackDevice * lightpack = dev::LightpackDevice::instance();
+            lightpack->set_colors(colors);
+            
         }
 
         template <typename Iterator>
@@ -57,7 +60,7 @@ namespace prismatoid {
             {
                 using qi::_1;
 
-                start %= (qi::lit("SetColors") >> list) [bind(&setColors,_1)];
+                start %= (qi::lit("SetColors") >> list) [bind(&set_colors,_1)];
 
                 list %= (color_val % ',');
 
