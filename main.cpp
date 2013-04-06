@@ -110,17 +110,21 @@ int main() {
             return -1;
         }
 
-        while (!cin.eof()) {
-            memset(buf, 0, sizeof(buf));
-            cin.getline(buf, kMaxCmdLength);
-            std::string in(buf);
-            prismatoid::api::ApiParser::parsecmd(in);
+        if (!cin.eof()) {
+            while (!cin.eof()) {
+                memset(buf, 0, sizeof(buf));
+                cin.getline(buf, kMaxCmdLength);
+                std::string in(buf);
+                if (in.size() > 0) {
+                    prismatoid::api::ApiParser::parsecmd(in);
+                }
+            }
+        } else {
+            cout << "running server at port 7777..." << endl;
+            boost::asio::io_service io_srv;
+            server *serv = new server(io_srv, 7777);
+            io_srv.run();
         }
-
-        cout << "running server at port 7777..." << endl;
-        boost::asio::io_service io_srv;
-        server *serv = new server(io_srv, 7777);
-        io_srv.run();
 
         dev->close();
 
