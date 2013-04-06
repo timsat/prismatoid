@@ -4,6 +4,7 @@
 //#define BOOST_SPIRIT_DEBUG
 
 #include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/qi_eoi.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_fusion.hpp>
@@ -60,7 +61,7 @@ namespace prismatoid {
             {
                 using qi::_1;
 
-                start %= (qi::lit("SetColors") >> list) [bind(&set_colors,_1)];
+                start %= (qi::lit("SetColors") >> list >> (qi::eol | qi::eoi)) [bind(&set_colors,_1)];
 
                 list %= (color_val % ',');
 
@@ -78,7 +79,7 @@ namespace prismatoid {
             cmd<std::string::iterator> c;
             bool const result = qi::phrase_parse(in.begin(), in.end(), c, ascii::space, cmdResult);
             if (!result)
-                std::cout << "error" << std::endl;
+                std::cout << "error parsing string: " << in << std::endl;
             
         }
 

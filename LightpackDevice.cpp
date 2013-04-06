@@ -17,7 +17,7 @@ namespace prismatoid {
                 delete LightpackDevice::this_;
         }
 
-        LightpackDevice *LightpackDevice::instance(libusb_context * ctx) {
+        LightpackDevice *LightpackDevice::init(libusb_context * ctx) {
             if (!LightpackDevice::this_)
                 LightpackDevice::this_ = new LightpackDevice(ctx);
             return LightpackDevice::this_;

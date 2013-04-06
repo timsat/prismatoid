@@ -16,7 +16,7 @@ namespace prismatoid {
 
         class LightpackDevice: public boost::noncopyable {
           public:
-            static LightpackDevice * instance(libusb_context *ctx);
+            static LightpackDevice * init(libusb_context *ctx);
             static LightpackDevice * instance();
              virtual ~LightpackDevice();
 

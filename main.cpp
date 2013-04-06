@@ -88,6 +88,8 @@ namespace prismatoid {
 int main() {
     using namespace std;
     using namespace prismatoid;
+    const int kMaxCmdLength = 1024;
+    char buf[kMaxCmdLength];
     libusb_context *ctx;
     cout << "Initializing usb... ";
     if (libusb_init(&ctx) == 0) {
@@ -97,7 +99,7 @@ int main() {
         cout << "debugging output enabled" << endl;
         libusb_set_debug(ctx, LIBUSB_LOG_LEVEL_DEBUG);
 #endif
-        devices::LightpackDevice * dev = devices::LightpackDevice::instance(ctx);
+        devices::LightpackDevice * dev = devices::LightpackDevice::init(ctx);
         
         
         cout << "Opening lightpack... ";
@@ -105,6 +107,14 @@ int main() {
             cout << "ok" << endl;
         } else {
             cout << "couldn't open lightpack" << endl;
+            return -1;
+        }
+
+        while (!cin.eof()) {
+            memset(buf, 0, sizeof(buf));
+            cin.getline(buf, kMaxCmdLength);
+            std::string in(buf);
+            prismatoid::api::ApiParser::parsecmd(in);
         }
 
         cout << "running server at port 7777..." << endl;
