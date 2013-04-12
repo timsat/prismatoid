@@ -1,9 +1,20 @@
 #include "LightpackDevice.hpp"
 #include <cstring>
 #include <iostream>
-
+#include <algorithm>
 namespace prismatoid {
     namespace devices {
+
+        enum Cmd{
+            CmdUpdateLeds = 1,
+            CmdOffAll,
+            CmdSetTimerOptions,
+            CmdPwmOptions, /* deprecated */
+            CmdSetSmoothness,
+            CmdSetBrightness,
+
+            CmdNoop = 0x0F
+        };
 
         LightpackDevice *LightpackDevice::this_ = NULL;
 
@@ -50,13 +61,19 @@ namespace prismatoid {
 
         bool LightpackDevice::set_colors(const std::vector<types::RgbColor>& colors) {
 
-            buf_[0] = 0x01;
+            buf_[0] = CmdUpdateLeds;
             int idx = 1;
 
             for(std::vector<types::RgbColor>::const_iterator it = colors.begin(); it != colors.end(); ++it) {
-                buf_[idx++] = (*it).r;
-                buf_[idx++] = (*it).g;
-                buf_[idx++] = (*it).b;
+
+                char r = 255 * pow((*it).r / 255.0, 2.0);
+                char g = 255 * pow((*it).g / 255.0, 2.0);
+                char b = 255 * pow((*it).b / 255.0, 2.0);
+
+
+                buf_[idx++] = r;
+                buf_[idx++] = g;
+                buf_[idx++] = b;
 
                 buf_[idx++] = 0;// (*it).r & 0x0f;
                 buf_[idx++] = 0;// (*it).g & 0x0f;
@@ -77,5 +94,22 @@ namespace prismatoid {
                                                  buf_, bytes_to_transfer, 1000);
             return result == bytes_to_transfer;
         }
+
+        bool LightpackDevice::set_smoothness(const int smoothness) {
+            const char bytes_to_transfer = 2;
+
+            buf_[0] = CmdSetSmoothness;
+            buf_[1] = smoothness;
+
+            int result = libusb_control_transfer(dev_,
+                                                 LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_CLASS
+                                                 | LIBUSB_RECIPIENT_INTERFACE,
+                                                 0x09,
+                                                 (2 << 8),
+                                                 0x00,
+                                                 buf_, bytes_to_transfer, 1000);
+            return result == bytes_to_transfer;
+        }
+
     }                           /* devices */
 }                               /* prismatoid */

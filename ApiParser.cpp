@@ -52,6 +52,18 @@ namespace prismatoid {
             
         }
 
+        void set_smoothness(int smoothness) {
+            std::cout << "SetSmoothness action " << smoothness << std::endl;
+            dev::LightpackDevice * lightpack = dev::LightpackDevice::instance();
+            lightpack->set_smoothness(smoothness);
+        }
+
+        void construct_list(std::vector<color_t> &rule_val, int length, color_t color)  {
+            for (int i = 0; i < length; i++) {
+                rule_val.push_back(color);
+            }
+        }
+
         template <typename Iterator>
         struct cmd
           : qi::grammar<Iterator, std::vector<color_t>(), ascii::space_type>
@@ -59,22 +71,23 @@ namespace prismatoid {
             cmd()
               : cmd::base_type(start)
             {
-                using qi::_1;
+                start =  (qi::lit("SetColors") >> list >> (qi::eol | qi::eoi)) [bind(&set_colors,qi::_1)]
 
-                start %= (qi::lit("SetColors") >> list >> (qi::eol | qi::eoi)) [bind(&set_colors,_1)];
+                        | (qi::lit("SetSmoothness") >> qi::int_ >> (qi::eol | qi::eoi)) [bind(&set_smoothness,qi::_1)];
 
-                list %= (color_val % ',');
+
+                list %= (color_val % ',') | list_short;
+
+                list_short = (qi::lit('[') >> qi::int_ >> qi::lit(']') >> color_val)[bind(&construct_list, qi::_val, qi::_1, qi::_2)];
 
                 color_val %= (qi::lit('(') >> qi::int_ >> qi::lit(',') >> qi::int_ >> qi::lit(',') >> qi::int_ >> qi::lit(')'));
 
             }
-            qi::rule<Iterator, std::vector<color_t>(), ascii::space_type> start, list;
+            qi::rule<Iterator, std::vector<color_t>(), ascii::space_type> start, list, list_short;
             qi::rule<Iterator, color_t(), ascii::space_type> color_val;
         };
 
         void ApiParser::parsecmd(std::string &in) {
-            namespace qi = boost::spirit::qi;
-
             std::vector<color_t> cmdResult;
             cmd<std::string::iterator> c;
             bool const result = qi::phrase_parse(in.begin(), in.end(), c, ascii::space, cmdResult);

@@ -24,6 +24,7 @@ namespace prismatoid {
              void close();
 
              bool set_colors(const std::vector<types::RgbColor>& colors);
+             bool set_smoothness(const int smoothness);
 
           protected:
              LightpackDevice(libusb_context *ctx);

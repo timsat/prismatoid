@@ -88,6 +88,7 @@ namespace prismatoid {
 int main() {
     using namespace std;
     using namespace prismatoid;
+
     const int kMaxCmdLength = 1024;
     char buf[kMaxCmdLength];
     libusb_context *ctx;
@@ -110,16 +111,17 @@ int main() {
             return -1;
         }
 
-        if (!cin.eof()) {
-            while (!cin.eof()) {
-                memset(buf, 0, sizeof(buf));
-                cin.getline(buf, kMaxCmdLength);
-                std::string in(buf);
-                if (in.size() > 0) {
-                    prismatoid::api::ApiParser::parsecmd(in);
-                }
+        int commandsHandled = 0;
+        while (0 && !cin.eof()) {
+            memset(buf, 0, sizeof(buf));
+            cin.getline(buf, kMaxCmdLength);
+            std::string in(buf);
+            if (in.size() > 0) {
+                commandsHandled++;
+                prismatoid::api::ApiParser::parsecmd(in);
             }
-        } else {
+        }
+        if (commandsHandled == 0) {
             cout << "running server at port 7777..." << endl;
             boost::asio::io_service io_srv;
             server *serv = new server(io_srv, 7777);
