@@ -1,8 +1,9 @@
 prismatoid (development in progress)
 ==========
 
-Lightweight cross-platform daemon to control Lightpack
-The daemon listens 7777 port and accepts following commands:
+Lightweight cross-platform daemon to control Lightpack.
+
+The daemon listens 7777 port and accepts the following commands:
 
 * `SetColors <color_list>`
 * `SetSmoothness <int_value>`
@@ -19,4 +20,4 @@ it will set first 5 LEDs to `#0A0A0A` the rest of LEDs will set to black
 
 
 `SetSmoothness 100`  
-sets smoothness to 100
+set smoothness to 100
