@@ -1,7 +1,7 @@
 prismatoid (development in progress)
 ==========
 
-Lightweight cross-platform daemon to control Lightpack.
+Lightweight cross-platform daemon to control [Lightpack](https://code.google.com/p/lightpack/).
 
 The daemon listens 7777 port and accepts the following commands:
 
