@@ -1,5 +1,6 @@
 #include <libusb-1.0/libusb.h>
 #include <iostream>
+#include <string>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include "LightpackDevice.hpp"
@@ -12,9 +13,12 @@ namespace prismatoid {
       public:
         session(boost::asio::io_service & io_service)
         :socket_(io_service) {
-        } tcp::socket & socket() {
+        }
+
+        tcp::socket & socket() {
             return socket_;
         }
+
         void start() {
             socket_.async_read_some(boost::asio::buffer(data_, max_length),
                                     boost::bind(&session::handle_read, this,
@@ -27,8 +31,6 @@ namespace prismatoid {
             if (!error) {
                 std::string in(data_, bytes_transferred);
                 prismatoid::api::ApiParser::parsecmd(in);
-                
-                
 
                 socket_.async_read_some(boost::asio::buffer(data_, max_length),
                                         boost::bind(&session::handle_read, this,
@@ -85,7 +87,7 @@ namespace prismatoid {
 
 }
 
-int main() {
+int main(int argc, char ** argv) {
     using namespace std;
     using namespace prismatoid;
 
@@ -112,7 +114,8 @@ int main() {
         }
 
         int commandsHandled = 0;
-        while (0 && !cin.eof()) {
+        bool isProcessStdin = argc > 1 && strcmp(argv[1],"-f") == 0;
+        while (isProcessStdin && !cin.eof()) {
             memset(buf, 0, sizeof(buf));
             cin.getline(buf, kMaxCmdLength);
             std::string in(buf);
