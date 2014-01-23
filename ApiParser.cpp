@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
-#include "color_types.hpp"
+#include "colorspace_types.hpp"
 #include "LightpackDevice.hpp"
 
 namespace prismatoid {
@@ -41,10 +41,10 @@ namespace prismatoid {
 
         void set_colors(std::vector<color_t> v) {
             std::cout << "SetColors action" << std::endl;
-            std::vector<types::RgbColor> colors;
+            std::vector<types::Rgb12> colors;
             for(std::vector<color_t>::iterator it = v.begin(); it != v.end(); ++it) {
                 out_color_t(*it);
-                types::RgbColor color = { std::get<0>(*it), std::get<1>(*it), std::get<2>(*it), 0x0fff};
+                types::Rgb12 color((unsigned char)std::get<0>(*it), (unsigned char)std::get<1>(*it), (unsigned char)std::get<2>(*it));
                 colors.push_back(color);
             }           
             dev::LightpackDevice * lightpack = dev::LightpackDevice::instance();

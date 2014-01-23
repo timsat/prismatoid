@@ -41,6 +41,8 @@ namespace prismatoid {
         bool LightpackDevice::open() {
             if (! dev_) {
                 dev_ = libusb_open_device_with_vid_pid(ctx_, 0x03EB, 0x204F);
+                if (!dev_)
+                    dev_ = libusb_open_device_with_vid_pid(ctx_, 0x1d50, 0x6022);
                 if (dev_) {
 
                     libusb_detach_kernel_driver(dev_, 0);
@@ -59,25 +61,23 @@ namespace prismatoid {
             }
         }
 
-        bool LightpackDevice::set_colors(const std::vector<types::RgbColor>& colors) {
+        bool LightpackDevice::set_colors(const std::vector<types::Rgb12>& colors) {
 
             buf_[0] = CmdUpdateLeds;
             int idx = 1;
 
-            for(std::vector<types::RgbColor>::const_iterator it = colors.begin(); it != colors.end(); ++it) {
+            for(std::vector<types::Rgb12>::const_iterator it = colors.begin(); it != colors.end(); ++it) {
+                types::Rgb12 color = (*it);
 
-                char r = 255 * pow((*it).r / 255.0, 2.0);
-                char g = 255 * pow((*it).g / 255.0, 2.0);
-                char b = 255 * pow((*it).b / 255.0, 2.0);
+                color.correctGamma(2.0);
 
+                buf_[idx++] = color.r8();
+                buf_[idx++] = color.g8();
+                buf_[idx++] = color.b8();
 
-                buf_[idx++] = r;
-                buf_[idx++] = g;
-                buf_[idx++] = b;
-
-                buf_[idx++] = 0;// (*it).r & 0x0f;
-                buf_[idx++] = 0;// (*it).g & 0x0f;
-                buf_[idx++] = 0;// (*it).b & 0x0f;
+                buf_[idx++] = color.r() & 0x0f;
+                buf_[idx++] = color.g() & 0x0f;
+                buf_[idx++] = color.b() & 0x0f;
             }
             
             if (idx < kLightpackDeviceBufferSize) {

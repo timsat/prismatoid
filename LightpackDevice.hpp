@@ -3,7 +3,7 @@
 
 #include <boost/utility.hpp>
 #include <libusb-1.0/libusb.h>
-#include "color_types.hpp"
+#include "colorspace_types.hpp"
 #include <vector>
 
 namespace prismatoid {
@@ -23,7 +23,7 @@ namespace prismatoid {
              bool open();
              void close();
 
-             bool set_colors(const std::vector<types::RgbColor>& colors);
+             bool set_colors(const std::vector<types::Rgb12>& colors);
              bool set_smoothness(const int smoothness);
 
           protected:
