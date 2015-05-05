@@ -11,6 +11,6 @@ if(${CMAKE_BUILD_TYPE} MATCHES Debug)
     add_definitions(-DDEBUG)
 endif(${CMAKE_BUILD_TYPE} MATCHES Debug)
 
-add_executable(prismatoid main.cpp LightpackDevice.cpp ApiParser.cpp colorspace_types.cpp)
+add_executable(prismatoid main.cpp Server.cpp LightpackDevice.cpp ApiParser.cpp colorspace_types.cpp)
 
 target_link_libraries(prismatoid ${libusb} ${libboost_system})

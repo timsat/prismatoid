@@ -10,8 +10,8 @@
 #include <boost/spirit/include/phoenix_fusion.hpp>
 #include <boost/spirit/include/phoenix_object.hpp>
 #include <boost/spirit/include/phoenix_stl.hpp>
+#include <boost/spirit/include/phoenix_bind.hpp>
 #include <boost/fusion/adapted.hpp>
-#include <boost/spirit/home/phoenix/bind/bind_function.hpp>
 
 
 #include <iostream>
@@ -28,23 +28,24 @@ namespace prismatoid {
         namespace qi = boost::spirit::qi;
         namespace ascii = boost::spirit::ascii;
         namespace phoenix = boost::phoenix;
+        using namespace std;
 
-        typedef std::tuple<int,int,int> color_t;
+        typedef tuple<int,int,int> color_t;
 
-        void out_int(int v) {
-            std::cout << v << std::endl;
+        void print_int(int v) {
+            cout << v << endl;
         }
 
-        void out_color_t(color_t v) {
-            std::cout << std::get<0>(v)<< ", "<< std::get<1>(v)<< ", "<< std::get<2>(v) << std::endl;
+        void print_color_t(color_t v) {
+            cout << get<0>(v)<< ", "<< get<1>(v)<< ", "<< get<2>(v) << endl;
         }
 
-        void set_colors(std::vector<color_t> v) {
-            std::cout << "SetColors action" << std::endl;
-            std::vector<types::Rgb12> colors;
-            for(std::vector<color_t>::iterator it = v.begin(); it != v.end(); ++it) {
-                out_color_t(*it);
-                types::Rgb12 color((unsigned char)std::get<0>(*it), (unsigned char)std::get<1>(*it), (unsigned char)std::get<2>(*it));
+        void set_colors(vector<color_t> v) {
+            cout << "SetColors action" << endl;
+            vector<types::Rgb12> colors;
+            for(vector<color_t>::iterator it = v.begin(); it != v.end(); ++it) {
+                print_color_t(*it);
+                types::Rgb12 color((unsigned char)get<0>(*it), (unsigned char)get<1>(*it), (unsigned char)get<2>(*it));
                 colors.push_back(color);
             }           
             dev::LightpackDevice * lightpack = dev::LightpackDevice::instance();
@@ -53,12 +54,12 @@ namespace prismatoid {
         }
 
         void set_smoothness(int smoothness) {
-            std::cout << "SetSmoothness action " << smoothness << std::endl;
+            cout << "SetSmoothness action " << smoothness << endl;
             dev::LightpackDevice * lightpack = dev::LightpackDevice::instance();
             lightpack->set_smoothness(smoothness);
         }
 
-        void construct_list(std::vector<color_t> &rule_val, int length, color_t color)  {
+        void construct_list(vector<color_t> &rule_val, int length, color_t color)  {
             for (int i = 0; i < length; i++) {
                 rule_val.push_back(color);
             }
@@ -66,7 +67,7 @@ namespace prismatoid {
 
         template <typename Iterator>
         struct cmd
-          : qi::grammar<Iterator, std::vector<color_t>(), ascii::space_type>
+          : qi::grammar<Iterator, vector<color_t>(), ascii::space_type>
         {
             cmd()
               : cmd::base_type(start)
@@ -83,16 +84,16 @@ namespace prismatoid {
                 color_val %= (qi::lit('(') >> qi::int_ >> qi::lit(',') >> qi::int_ >> qi::lit(',') >> qi::int_ >> qi::lit(')'));
 
             }
-            qi::rule<Iterator, std::vector<color_t>(), ascii::space_type> start, list, list_short;
+            qi::rule<Iterator, vector<color_t>(), ascii::space_type> start, list, list_short;
             qi::rule<Iterator, color_t(), ascii::space_type> color_val;
         };
 
-        void ApiParser::parsecmd(std::string &in) {
-            std::vector<color_t> cmdResult;
-            cmd<std::string::iterator> c;
+        void ApiParser::parsecmd(string &in) {
+            vector<color_t> cmdResult;
+            cmd<string::iterator> c;
             bool const result = qi::phrase_parse(in.begin(), in.end(), c, ascii::space, cmdResult);
             if (!result)
-                std::cout << "error parsing string: " << in << std::endl;
+                cout << "error parsing string: " << in << endl;
             
         }
 
