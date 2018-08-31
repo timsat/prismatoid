@@ -1,0 +1,2 @@
+#!/bin/bash
+echo "SetColors[10](120,120,60)" | prismatoid -f
