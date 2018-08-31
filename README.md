@@ -1,4 +1,4 @@
-prismatoid (development in progress)
+prismatoid
 ==========
 
 Lightweight cross-platform daemon to control [Lightpack](https://code.google.com/p/light-pack/).
